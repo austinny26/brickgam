@@ -13,7 +13,7 @@ public class MouseInputs implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        drawPanel.getMainFrame().mouseClicked(e);
+        drawPanel.getMainFrame().getBrickLayout().mouseClicked(e);
     }
 
     @Override

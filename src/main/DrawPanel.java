@@ -12,13 +12,13 @@ public class DrawPanel extends JPanel implements MouseListener{
 
     private MainFrame mainFrame;
     private MouseInputs mouseInputs;
-    BrickLayout b = new BrickLayout("src/bricks", 40, true);
 
 
 
     public DrawPanel(MainFrame mainFrame) {
         mouseInputs = new MouseInputs(this);
         this.mainFrame = mainFrame;
+        addMouseListener(mouseInputs);
     }
 
     protected void paintComponent(Graphics g) {

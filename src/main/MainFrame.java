@@ -1,28 +1,31 @@
 package main;
-
 import brick.BrickLayout;
-
-import javax.swing.JFrame;
 import java.awt.*;
-import java.awt.event.MouseEvent;
 
 public class MainFrame implements Runnable {
 
     private GameWindow gameWindow;
     private DrawPanel drawPanel;
     private Thread windowThread;
-    BrickLayout b = new BrickLayout("src/bricks", 40, true);
+
+    private BrickLayout brickLayout;
 
 
-    private final int FPS_SET = 120;
-    private final int UPS_SET = 200;
+    private final int FPS_SET = 10;
+    private final int UPS_SET = 20;
 
     public MainFrame() {
+        initClasses();
 
         drawPanel = new DrawPanel(this);
         gameWindow = new GameWindow(drawPanel);
 
+
         startThread();
+    }
+
+    public void initClasses(){
+        brickLayout = new BrickLayout("src/bricks", 40, false);
     }
 
     public void startThread() {
@@ -34,13 +37,7 @@ public class MainFrame implements Runnable {
 
 
     public void render(Graphics g){
-        b.drawGrid(g);
-    }
-
-    public void mouseClicked(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1){
-
-        }
+        brickLayout.draw(g);
     }
 
 
@@ -87,7 +84,10 @@ public class MainFrame implements Runnable {
                 }
             }
         }
-
-
     }
+
+    public BrickLayout getBrickLayout(){
+        return brickLayout;
+    }
+
 }

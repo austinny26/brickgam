@@ -4,26 +4,18 @@ import inputs.MouseInputs;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class BrickLayout {
+public class BrickLayout implements Statemethods {
 
     private ArrayList<Brick> bricks;
 
     private int[][] brickLayout;
-
-    public static boolean isClicked() {
-        return clicked;
-    }
-
-    public static void setClicked(boolean clicked) {
-        BrickLayout.clicked = clicked;
-    }
-
-    public static boolean clicked;
+    private boolean dropNow;
     private int cols;
 
     public BrickLayout(String fileName, int cols, boolean dropAllBricks) {
@@ -45,32 +37,114 @@ public class BrickLayout {
         }
     }
 
-    public void doOneBrick() {
+    @Override
+    public void draw(Graphics g) {
+        drawGrid(g);
+        if(dropNow){
+            dropBrick(g);
+            dropNow = false;
+        }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            dropNow = true;
+            System.out.println("hi");
+        }
+    }
+
+
+    public void dropBrick(Graphics g){
+        drawGrid(g);
+
         int brickMin, brickMax;
-
-
         if (bricks.size() != 0) {
             Brick b = bricks.remove(0);
-
-
             brickMin = b.getStart();
             brickMax = b.getEnd();
             int counter = 0;
 
-
-            while (!checkBrickSpot(counter + 1, brickMin) && !checkBrickSpot(counter + 1, brickMax)) {
+            while (!checkBrickSpot(counter + 1, brickMin) && !checkBrickSpot(counter + 1, brickMax)){
                 counter++;
+                for(int k = brickMin; k <= brickMax; k++) {
+                    g.setColor(Color.red);
+                    g.fillRect((int) (2.5 * k * 10), (int) (2.5 * counter * 10), 20, 20);
+                }
+                for(int k = brickMin; k <= brickMax; k++) {
+                    g.setColor(Color.black);
+                    g.drawRect((int) (2.5 * (k) * 10), (int) (2.5 * (counter - 1) * 10), 20, 20);
+                }
+            }
+            for(int k = brickMin; k <= brickMax; k++){
+                brickLayout[counter][k] = 1;
+            }
+
+
+
+            /*while (!checkBrickSpot(counter + 1, brickMin) && !checkBrickSpot(counter + 1, brickMax)) {
+                counter++;
+                for(int k = brickMin; k <= brickMax; k++){
+                        g.fillRect((int)(k*2.5*10),(int)(counter*2.5*10),20,20);
+                }
             }
             for (int i = brickMin; i <= brickMax; i++) {
                 try {
                     brickLayout[counter][i] = 1;
-                } catch (ArrayIndexOutOfBoundsException _) {
+                } catch (ArrayIndexOutOfBoundsException _) {}
+            }
+
+             */
+        }
+    }
+
+    public void drawGrid(Graphics g) {
+        for (int i = 0; i < 40; i++) {
+            for (int j = 0; j < 30; j++) {
+                if(brickLayout[j][i] == 0) {
+                    g.setColor(Color.black);
+                    g.drawRect((int) (2.5 * 10 * i), (int) (2.5 * 10 * j), 20, 20);
+                }
+                else{
+                    g.setColor(Color.red);
+                    g.fillRect((int) (2.5 * 10 * i), (int) (2.5 * 10 * j), 20, 20);
                 }
             }
         }
+    }
+
+
+    public void printBrickLayout() {
+        for (int r = 0; r < brickLayout.length; r++) {
+            for (int c = 0; c < brickLayout[0].length; c++) {
+                System.out.print(brickLayout[r][c] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+
+    public int[][] getBrickLayout() {
+        return brickLayout;
+    }
+
+
+    @Override
+    public void update() {
 
     }
 
+    public boolean checkBrickSpot(int r, int c) {
+        try {
+            if (!(brickLayout[r][c] == 0)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return true;
+        }
+    }
 
     public ArrayList<String> getFileData(String fileName) {
         File f = new File(fileName);
@@ -88,37 +162,27 @@ public class BrickLayout {
         return fileData;
     }
 
-    public void printBrickLayout() {
-        for (int r = 0; r < brickLayout.length; r++) {
-            for (int c = 0; c < brickLayout[0].length; c++) {
-                System.out.print(brickLayout[r][c] + " ");
+    public void doOneBrick() {
+        int brickMin, brickMax;
+        if (bricks.size() != 0) {
+            Brick b = bricks.remove(0);
+
+
+            brickMin = b.getStart();
+            brickMax = b.getEnd();
+            int counter = 0;
+
+
+            while (!checkBrickSpot(counter + 1, brickMin) && !checkBrickSpot(counter + 1, brickMax)) {
+                counter++;
             }
-            System.out.println();
-        }
-    }
-
-    public boolean checkBrickSpot(int r, int c) {
-        try {
-            if (brickLayout[r][c] == 1) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return true;
-        }
-    }
-
-    public int[][] getBrickLayout() {
-        return brickLayout;
-    }
-
-
-    public void drawGrid(Graphics g) {
-        for (int i = 0; i < 40; i++) {
-            for (int j = 0; j < 30; j++) {
-                g.drawRect((int) (2.5 * 10 * i), (int) (2.5 * 10 * j), 20, 20);
+            for (int i = brickMin; i <= brickMax; i++) {
+                try {
+                    brickLayout[counter][i] = 1;
+                } catch (ArrayIndexOutOfBoundsException _) {}
             }
         }
+
     }
+
 }
